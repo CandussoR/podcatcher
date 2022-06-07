@@ -7,33 +7,32 @@
       <option>podcast</option>
       <option>episodes</option>
     </select>
-    <p>Type : {{ type }}</p>
-    <p>{{ query }}</p>
-    <div v-for="result in searchResults" :key="result">
-      <p>{{ result }}</p>
-    </div> -->
+
+      <div v-for="result in searchResults" :key="result">
+        <div class="result">
+          <img :src="result.thumbnail" />
+          <p class="podcast-title">{{ result.title_original }}</p>
+          <p class="description">{{ result.description_original}}</p>
+        </div>
+      </div>
   </div>
 </template>
 
 <script>
   import { ref } from 'vue'
+  import client from '@/listennotes/config'
 
   export default {
     
     name: 'HomeView',
     setup() {
-      const { Client } = require('podcast-api')
-
       var query =  ref('')
       var type = ref('podcast')
-      const episodes = ref([])
-      var searchResults = ref([])
-
-    const client = Client({ apiKey: 'c1fe9b092f4145028ad9d246a6b9fe03' });
+      var searchResults = ref()
 
     const handleQuery = async() => {
       // Erases the last search
-      searchResults.value = []
+      searchResults.value = null
 
       const queryObject = {
       q: query.value,
@@ -47,12 +46,9 @@
       only_in: 'title,description',
       safe_mode: 0,
     }
-      console.log(queryObject)
+
        await client.search(queryObject).then((response) => {
-      // Get response json data here
-      console.log(response.data)
-      console.log(response.data.results)
-      searchResults.value.push(response.data.results)
+      searchResults.value = response.data.results
       }).catch((error) => {
           console.log(error)
         });
@@ -65,7 +61,11 @@
 
 <style>
   .home {
+    max-width: 960px;
     background-color: #E2F0FF;
     border-radius: 10px;
+  }
+  img {
+    max-width: 80px;
   }
 </style>
