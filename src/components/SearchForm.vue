@@ -1,11 +1,11 @@
 <template>
-  <form @submit.prevent="sendQueryObject">
-  <label> Search : </label>
-    <input v-model="query" type="text">
-    <select v-model="type">
-      <option>podcast</option>
-      <option>episodes</option>
-    </select>
+    <form @submit.prevent="sendQueryObject">
+        <label> Search : </label>
+        <input v-model="query" type="text">
+        <select v-model="type">
+        <option>podcast</option>
+        <option>episode</option>
+        </select>
     </form>
 </template>
 

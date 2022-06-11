@@ -1,26 +1,33 @@
 <template>
     <SearchForm @query="handleQuery"/>
     <div v-if="searchResults">
-    <SearchResults :results="searchResults" />
+        <div v-if="type == 'podcast'">
+            <PodcastSearchResults :searchResults="searchResults" />
+        </div>
+        <div v-else>
+            <EpisodeSearchResults :searchResults="searchResults" />
+        </div>
     </div>
 </template>
 
 <script>
 import SearchForm from '@/components/SearchForm.vue'
-import SearchResults from '@/components/SearchResults.vue'
+import PodcastSearchResults from '@/components/PodcastSearchResults.vue'
+import EpisodeSearchResults from '@/components/EpisodeSearchResult.vue'
 import { ref } from 'vue'
 import client from '@/listennotes/config'
 
 export default {
-    components: { SearchForm, SearchResults },
+    components: { SearchForm, PodcastSearchResults, EpisodeSearchResults },
     setup() {
 
         var searchResults = ref()
+        var type = ref()
 
         const handleQuery = async (objectQuery) => {
             searchResults.value = null
 
-            console.log(objectQuery)
+            type.value = objectQuery.type
 
             await client.search(objectQuery)
             .then((response) => {
@@ -30,7 +37,7 @@ export default {
             });
         }
 
-        return { searchResults, handleQuery}
+        return { type, searchResults, handleQuery}
     }
 }
 </script>
