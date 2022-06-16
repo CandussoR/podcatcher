@@ -5,20 +5,44 @@
             <p class="episode-title">{{ result.title_original }}</p>
             <p class="description">{{ descriptionSnippet }}</p>
         </div>
+        <div class="action">
+            <div v-if="!reading">
+                <span class="material-icons" @click="readAudio">play_arrow</span>
+            </div>
+            <div v-else>
+                <span class="material-icons" @click="pauseAudio">pause</span>
+            </div>
+
+        </div>
+
     </div>
 </template>
 
 <script>
 import { computed } from '@vue/runtime-core'
+import { ref } from 'vue'
 
 export default {
     props: ['result'],
     setup(props) {
+        const reading = ref(false);
         const descriptionSnippet = computed(() => {
             return props.result.description_original.substring(0,100) + '...'
         })
 
-        return { descriptionSnippet }
+        const audio = new Audio(props.result.audio)
+
+        const readAudio = () => {
+            audio.play()
+            reading.value = true;
+        }
+
+        const pauseAudio = () => {
+            audio.pause()
+            reading.value = false;
+        }
+
+        return { descriptionSnippet, readAudio, pauseAudio, reading }
     }
 }
 </script>
@@ -28,7 +52,6 @@ export default {
         display: flex;
         max-height: 200px;
         background-color: #FB8574;
-        max-height: 100px;
         padding: 10px;
         border-bottom: 1px solid #171E2B;
         border-radius: 20px;
@@ -40,12 +63,13 @@ export default {
     }
     .episode-result p.episode-title {
         font-weight: bold;
-        justify-content: center;
     }
     img {
         max-width: 80px;
         max-height: 80px;
-        justify-content: flex-start;
-        align-items: center;
+    }
+    .action {
+        display: flex;
+        justify-content: space-between;
     }
 </style>
