@@ -28,10 +28,11 @@ export default {
             searchResults.value = null
 
             type.value = objectQuery.type
-
+            
             await client.search(objectQuery)
             .then((response) => {
                 searchResults.value = response.data.results
+                console.log(response.data.results)
             }).catch((error) => {
                 console.log(error)
             });
