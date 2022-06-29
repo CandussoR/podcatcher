@@ -1,16 +1,16 @@
 <template>
   <div class="results">
     <div v-for="result in searchResults" :key="result">
-      <SinglePodcast :result="result" />
+      <SearchPodcast :result="result" />
     </div>
   </div>
 </template>
 
 <script>
-import SinglePodcast from './SinglePodcast.vue'
+import SearchPodcast from './SearchPodcast.vue'
 export default {
     props: ["searchResults"],
-    components: { SinglePodcast }
+    components: { SearchPodcast }
 }
 </script>
 
