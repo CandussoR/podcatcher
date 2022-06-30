@@ -1,6 +1,10 @@
 <template>
   <div class="home">
     <h1>Home View</h1>
+    <button>
+      <router-link :to="{name: 'signUp'}">Sign up</router-link> |
+      <router-link :to="{name: 'login'}">Login</router-link>
+    </button>
     <nav>
       <router-link :to="{name: 'search'}">Make your search!</router-link>
     </nav>
