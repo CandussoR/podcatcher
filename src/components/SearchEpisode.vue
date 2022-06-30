@@ -59,7 +59,7 @@ export default {
     .details {
         display: flex;
         flex-direction: column;
-        padding: 10px;
+        background-color: #F7FBFF;
     }
     .episode-result p.episode-title {
         font-weight: bold;
