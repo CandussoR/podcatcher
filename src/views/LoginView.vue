@@ -1,6 +1,8 @@
 <template>
   <h1>Login</h1>
   <LoginForm @login="welcomeUser" />
+  <p>You don't have an account ?</p>
+  <button @click="toSignUp">Sign up!</button>
 </template>
 
 <script>
@@ -16,7 +18,11 @@ export default {
       router.push({ name: "home" });
     };
 
-    return { welcomeUser };
+    const toSignUp = () => {
+      router.push({ name: "signUp" });
+    };
+
+    return { welcomeUser, toSignUp };
   },
 };
 </script>
