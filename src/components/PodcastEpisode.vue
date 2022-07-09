@@ -6,7 +6,7 @@
             <p class="description">{{ descriptionSnippet }}</p>
         </div>
         <div class="action">
-            <div v-if="!reading">
+            <div v-if="!reading || paused">
                 <span class="material-icons" @click="readAudio">play_arrow</span>
             </div>
             <div v-else>
@@ -27,6 +27,7 @@ export default {
     props: ['episode'],
     setup(props) {
         const reading = ref(false);
+        const paused = ref(false);
         const descriptionSnippet = computed(() => {
             return props.episode.description.substring(0,100) + '...'
         })
@@ -41,9 +42,10 @@ export default {
         const pauseAudio = () => {
             audio.pause()
             reading.value = false;
+            paused.value = true;
         }
 
-        return { descriptionSnippet, readAudio, pauseAudio, reading }
+        return { descriptionSnippet, readAudio, pauseAudio, reading, paused }
     }
 }
 </script>
