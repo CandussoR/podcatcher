@@ -1,33 +1,29 @@
 <template>
   <div class="home">
-    <h1>Home View</h1>
-    <button>
-      <router-link :to="{name: 'signUp'}">Sign up</router-link> |
-      <router-link :to="{name: 'login'}">Login</router-link>
-    </button>
     <nav>
-      <router-link :to="{name: 'search'}">Make your search!</router-link>
+      <router-link :to="{ name: 'search' }">Make your search!</router-link>
     </nav>
   </div>
 </template>
 
 <script>
-  export default {
- 
-  }
+export default {
+  setup() {},
+};
 </script>
 
 <style>
-  .home {
-    max-width: 960px;
-    background-color: #E2F0FF;
-    border-radius: 10px;
-  }
-  img {
-    max-width: 80px;
-  }
-  a.router-link-active {
-        color: #444;
-        font-weight: bold;
-    }
+.home {
+  max-width: 960px;
+  max-height: 960px;
+  background-color: #e2f0ff;
+  border-radius: 10px;
+}
+img {
+  max-width: 80px;
+}
+a.router-link-active {
+  color: #444;
+  font-weight: bold;
+}
 </style>
