@@ -1,5 +1,5 @@
 <template>
-  <div class="navbar">
+  <header class="navbar">
     <nav>
       <h1>
         <router-link :to="{ name: 'home' }">Podcatch it</router-link>
@@ -13,7 +13,7 @@
         <button @click="handleLogout">Log Out</button>
       </div>
     </nav>
-  </div>
+  </header>
 </template>
 
 <script>
