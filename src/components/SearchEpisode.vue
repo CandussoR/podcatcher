@@ -19,20 +19,21 @@
         <div class="dropdown">
           <span class="material-icons" @click="showMenu = !showMenu">add</span>
           <ul v-if="showMenu" class="playlist-menu">
-            <li>New Playlist</li>
+            <li @click="handleNewPlaylist">New Playlist</li>
             <li>Second</li>
           </ul>
         </div>
       </div>
-
     </div>
-    
   </div>
 </template>
 
 <script>
 import { computed } from "@vue/runtime-core";
 import { ref } from "vue";
+import useCollection from "@/composables/useCollection";
+import getUser from "@/composables/getUser";
+import { serverTimestamp } from "@firebase/firestore";
 
 export default {
   props: ["result"],
@@ -40,6 +41,9 @@ export default {
     const reading = ref(false);
     const isPaused = ref(false);
     const showMenu = ref(false);
+
+    const { error, addNewDoc } = useCollection("playlists");
+    const { user } = getUser();
 
     const descriptionSnippet = computed(() => {
       return props.result.description_original.substring(0, 100) + "...";
@@ -58,7 +62,24 @@ export default {
       isPaused.value = true;
     };
 
-    return { descriptionSnippet, readAudio, pauseAudio, reading, isPaused, showMenu };
+    const handleNewPlaylist = async () => {
+      await addNewDoc({
+        user: user.value.uid,
+        username: user.value.displayName,
+        podcasts: [props.result],
+        createdAt: serverTimestamp(),
+      });
+    };
+
+    return {
+      descriptionSnippet,
+      readAudio,
+      pauseAudio,
+      reading,
+      isPaused,
+      showMenu,
+      handleNewPlaylist,
+    };
   },
 };
 </script>
