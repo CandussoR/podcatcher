@@ -4,7 +4,17 @@ import SearchView from '../views/SearchView.vue'
 import PodcastView from '../views/PodcastView.vue'
 import SignUpView from '../views/SignUpView.vue'
 import LoginView from '../views/LoginView.vue'
+import PlaylistsView from '../views/Playlists/PlaylistsView.vue'
+import { auth } from '@/firebase/config'
 
+const requireAuth = (to, from, next) => {
+  let user = auth.currentUser
+  if (!user) {
+    next({ name: 'login'})
+  } else {
+    next()
+  }
+}
 const routes = [
   {
     path: '/',
@@ -31,6 +41,13 @@ const routes = [
     path: '/login',
     name: 'login',
     component: LoginView
+  },
+  {
+    path: '/playlists/:id',
+    name: 'playlists',
+    component: PlaylistsView,
+    props: true,
+    beforeEnter: requireAuth
   }
 ]
 
