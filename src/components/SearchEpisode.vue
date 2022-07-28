@@ -20,7 +20,9 @@
           <span class="material-icons" @click="showMenu = !showMenu">add</span>
           <ul v-if="showMenu" class="playlist-menu">
             <li @click="handleNewPlaylist">New Playlist</li>
-            <li>Second</li>
+            <li v-for="playlist in playlists" :key="playlist.id">
+              {{ playlist.playlistName }}
+            </li>
           </ul>
         </div>
       </div>
@@ -31,9 +33,11 @@
 <script>
 import { computed } from "@vue/runtime-core";
 import { ref } from "vue";
+import { serverTimestamp } from "@firebase/firestore";
+import { useRouter } from "vue-router";
 import useCollection from "@/composables/useCollection";
 import getUser from "@/composables/getUser";
-import { serverTimestamp } from "@firebase/firestore";
+import getCollection from "@/composables/getCollection";
 
 export default {
   props: ["result"],
@@ -41,6 +45,10 @@ export default {
     const reading = ref(false);
     const isPaused = ref(false);
     const showMenu = ref(false);
+
+    const { documents: playlists } = getCollection("playlists");
+    console.log(playlists);
+    const router = useRouter();
 
     const { error, addNewDoc } = useCollection("playlists");
     const { user } = getUser();
@@ -62,22 +70,37 @@ export default {
       isPaused.value = true;
     };
 
+    const formattedPodcast = {
+      audio: props.result.audio,
+      audio_length_sec: props.result.audio_length_sec,
+      description: props.result.description_highlighted,
+      guid_from_rss: props.result.guid_from_rss,
+      id: props.result.id,
+      image: props.result.image,
+      listennotes_url: props.result.listennotes_url,
+      pub_date_ms: props.result.pub_date_ms,
+      thumbnail: props.result.thumbnail,
+      title: props.result.title_original,
+    };
+
     const handleNewPlaylist = async () => {
       await addNewDoc({
+        playlistName: "New Playlist",
         user: user.value.uid,
         username: user.value.displayName,
-        podcasts: [props.result],
+        podcasts: [formattedPodcast],
         createdAt: serverTimestamp(),
       });
     };
 
     return {
       descriptionSnippet,
-      readAudio,
-      pauseAudio,
       reading,
       isPaused,
       showMenu,
+      playlists,
+      readAudio,
+      pauseAudio,
       handleNewPlaylist,
     };
   },

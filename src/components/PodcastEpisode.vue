@@ -16,9 +16,12 @@
         </div>
         <!-- dropDown playlist menu -->
         <div class="dropdown">
-          <span class="material-icons">add</span>
-          <ul class="playlist-menu">
-            <li>New Playlist</li>
+          <span class="material-icons" @click="showMenu = !showMenu">add</span>
+          <ul v-if="showMenu" class="playlist-menu">
+            <li @click="handleNewPlaylist">New Playlist</li>
+            <li v-for="playlist in playlists" :key="playlist.id">
+              {{ playlist.playlistName }}
+            </li>
           </ul>
         </div>
       </div>
@@ -29,12 +32,23 @@
 <script>
 import { computed } from "@vue/runtime-core";
 import { ref } from "vue";
+import useCollection from "@/composables/useCollection";
+import getUser from "@/composables/getUser";
+import { serverTimestamp } from "@firebase/firestore";
+import getCollection from "@/composables/getCollection";
 
 export default {
   props: ["episode"],
   setup(props) {
     const reading = ref(false);
     const paused = ref(false);
+    const showMenu = ref(false);
+
+    const { documents: playlists } = getCollection("playlists");
+
+    const { error, addNewDoc } = useCollection("playlists");
+    const { user } = getUser();
+
     const descriptionSnippet = computed(() => {
       return props.episode.description.substring(0, 100) + "...";
     });
@@ -52,7 +66,39 @@ export default {
       paused.value = true;
     };
 
-    return { descriptionSnippet, readAudio, pauseAudio, reading, paused };
+    const formattedPodcast = {
+      audio: props.result.audio,
+      audio_length_sec: props.result.audio_length_sec,
+      description: props.result.description,
+      guid_from_rss: props.result.guid_from_rss,
+      id: props.result.id,
+      image: props.result.image,
+      listennotes_url: props.result.listennotes_url,
+      pub_date_ms: props.result.pub_date_ms,
+      thumbnail: props.result.thumbnail,
+      title: props.result.title,
+    };
+
+    const handleNewPlaylist = async () => {
+      await addNewDoc({
+        playlistName: "New Playlist",
+        user: user.value.uid,
+        username: user.value.displayName,
+        podcasts: [formattedPodcast],
+        createdAt: serverTimestamp(),
+      });
+    };
+
+    return {
+      descriptionSnippet,
+      readAudio,
+      pauseAudio,
+      reading,
+      paused,
+      showMenu,
+      handleNewPlaylist,
+      playlists,
+    };
   },
 };
 </script>
