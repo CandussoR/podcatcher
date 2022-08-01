@@ -1,13 +1,23 @@
 <template>
   <NavBar />
+  <nav v-if="user" class="user-playlist">
+    <NavBarPlaylist />
+  </nav>
   <router-view />
 </template>
 
 <script>
 import NavBar from "./components/NavBar.vue";
+import NavBarPlaylist from "./components/NavBarPlaylist.vue";
+import getUser from "./composables/getUser";
 
 export default {
-  components: { NavBar },
+  components: { NavBar, NavBarPlaylist },
+  setup() {
+    const { user } = getUser();
+
+    return { user };
+  },
 };
 </script>
 <style>
