@@ -1,9 +1,9 @@
 <template>
   <div class="episode-result">
-    <img :src="result.thumbnail" />
+    <img :src="episode.thumbnail" />
 
     <div class="details">
-      <p class="episode-title">{{ result.title_original }}</p>
+      <p class="episode-title">{{ episode.title_original }}</p>
       <p class="description">{{ descriptionSnippet }}</p>
 
       <!-- buttons -->
@@ -14,17 +14,7 @@
         <div v-else>
           <span class="material-icons" @click="pauseAudio">pause</span>
         </div>
-
-        <!-- dropDown playlist menu -->
-        <div class="dropdown">
-          <span class="material-icons" @click="showMenu = !showMenu">add</span>
-          <ul v-if="showMenu" class="playlist-menu">
-            <li @click="handleNewPlaylist">New Playlist</li>
-            <li v-for="playlist in playlists" :key="playlist.id">
-              {{ playlist.playlistName }}
-            </li>
-          </ul>
-        </div>
+        <DropdownMenu :episode="episode" />
       </div>
     </div>
   </div>
@@ -33,31 +23,21 @@
 <script>
 import { computed } from "@vue/runtime-core";
 import { ref } from "vue";
-import { serverTimestamp } from "@firebase/firestore";
-import { useRouter } from "vue-router";
-import useCollection from "@/composables/useCollection";
-import getUser from "@/composables/getUser";
-import getCollection from "@/composables/getCollection";
+import DropdownMenu from "./DropdownMenu.vue";
 
 export default {
-  props: ["result"],
+  props: ["episode"],
+  components: { DropdownMenu },
   setup(props) {
     const reading = ref(false);
     const isPaused = ref(false);
-    const showMenu = ref(false);
-
-    const { documents: playlists } = getCollection("playlists");
-    console.log(playlists);
-    const router = useRouter();
-
-    const { error, addNewDoc } = useCollection("playlists");
-    const { user } = getUser();
 
     const descriptionSnippet = computed(() => {
-      return props.result.description_original.substring(0, 100) + "...";
+      return props.episode.description_original.substring(0, 100) + "...";
     });
 
-    const audio = new Audio(props.result.audio);
+    console.log(props.episode);
+    const audio = new Audio(props.episode.audio);
 
     const readAudio = () => {
       audio.play();
@@ -70,38 +50,12 @@ export default {
       isPaused.value = true;
     };
 
-    const formattedPodcast = {
-      audio: props.result.audio,
-      audio_length_sec: props.result.audio_length_sec,
-      description: props.result.description_highlighted,
-      guid_from_rss: props.result.guid_from_rss,
-      id: props.result.id,
-      image: props.result.image,
-      listennotes_url: props.result.listennotes_url,
-      pub_date_ms: props.result.pub_date_ms,
-      thumbnail: props.result.thumbnail,
-      title: props.result.title_original,
-    };
-
-    const handleNewPlaylist = async () => {
-      await addNewDoc({
-        playlistName: "New Playlist",
-        user: user.value.uid,
-        username: user.value.displayName,
-        podcasts: [formattedPodcast],
-        createdAt: serverTimestamp(),
-      });
-    };
-
     return {
       descriptionSnippet,
       reading,
       isPaused,
-      showMenu,
-      playlists,
       readAudio,
       pauseAudio,
-      handleNewPlaylist,
     };
   },
 };
@@ -130,24 +84,5 @@ img {
 }
 .action {
   display: flex;
-}
-.dropdown {
-  position: relative;
-  top: 0 px;
-  left: 20px;
-}
-.playlist-menu {
-  position: absolute;
-  background: turquoise;
-  border-radius: 10px;
-  max-width: max-content;
-  white-space: nowrap;
-}
-.playlist-menu li {
-  list-style: none;
-  text-align: left;
-}
-li:hover {
-  background: grey;
 }
 </style>
